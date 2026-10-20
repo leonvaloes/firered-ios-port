@@ -4,4 +4,14 @@
 
 **Fontes separadas:** `analysis/rea-capability.md` registra a rejeição da ROM raw ARM pelo REA MCP/Ghidra Windows antes de análise e ausência de Evidence REA da ROM; consulta atual `rea.binary_session({})` confirmou sessão fechada, Ghidra instalado como candidato, Hopper indisponível neste host e IDA/Kuna não configurados. Não se repetiu a mesma abertura rejeitada. `analysis/ghidra-session.md` e `analysis/subsystems.md` documentam investigações estáticas feitas no Ghidra **independente** e suas lacunas: não estabelecem gameplay, paridade nem execução. Esta fatia usa somente identidade/estrutura já registrada; não atribui descoberta nova da ROM ao REA ou Ghidra.
 
-**Teste e validação pendente:** `ROMImportTests.swift` inclui rejeição de cópia sintética de tamanho correto porém hash errado, cópia truncada e perfil sintético não autorizado. Uma nova seleção invalida o estado anterior antes de verificar a substituição. São testes de guarda/contrato; exigem execução em Xcode/macOS. Em 2026-10-20, o run público anterior [39467062005](https://github.com/leonvaloes/firered-ios-port/actions/runs/39467062005) concluiu com sucesso no commit `3ff5e59a61ee410ff4bd36fde804708281ef1fa5`, **anterior a esta fatia local**: não testa estas alterações. A auditoria local encontrou os 18 arquivos Swift listados no allowlist do workflow e referenciados como Sources no projeto; `git diff --check` não reportou erros, mas não compila Swift. Nenhum XCTest desta fatia foi executado, nenhum teste físico, campanha até créditos, save após renovação ou paridade foi realizado. A aprovação depende de novo run macOS e, para os gates físicos, de resultados do iPhone do usuário.
+**Resultado do CI (run macOS oficial):**
+- Commit: `1f418ba472c9eba730a518f0db5d11871bec9d52` (push em `main`)
+- Run GitHub Actions: [39474630843](https://github.com/leonvaloes/firered-ios-port/actions/runs/39474630843)
+- Conclusão: `success`
+- Etapas executadas e aprovadas:
+  1. `Check source inventory (fail closed)`: aprovado (sem ROMs, assets protegidos ou segredos; apenas fontes Swift permitidas).
+  2. `Build and smoke-test in iOS Simulator`: aprovado (compilação Debug iphonesimulator, boot de simulador iPhone, instalação do app, lançamento e execução da suíte XCTest completa com 0 falhas).
+  3. `Build unsigned iPhone app`: aprovado (compilação Release iphoneos sem assinatura).
+  4. `Validate app contents and package unsigned IPA`: aprovado (bundle validado sem _CodeSignature, mobileprovision ou symlinks; artefato `FireRedPort-unsigned-installation-probe` gerado).
+- **Status da fatia técnica:** validada em CI/XCTest no runner macOS.
+- **Limitações e gates mantidos bloqueados:** este resultado valida a sintaxe, integridade de pacotes, contratos sintéticos e ciclo de vida do app em simulador. Não comprova execução nem importação em iPhone físico, não valida paridade de gameplay, não testa salvamento físico após reinício nem renovação de assinatura de 7 dias, e não aprova nenhum gate humano.
