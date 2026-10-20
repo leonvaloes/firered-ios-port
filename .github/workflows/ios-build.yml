@@ -3,13 +3,11 @@ name: iOS installation probe (unsigned)
 on:
   push:
     paths:
-      - 'ios/FireRedPort.xcodeproj/project.pbxproj'
-      - 'ios/FireRedPort/App/FireRedPortApp.swift'
+      - 'ios/**'
       - '.github/workflows/ios-build.yml'
   pull_request:
     paths:
-      - 'ios/FireRedPort.xcodeproj/project.pbxproj'
-      - 'ios/FireRedPort/App/FireRedPortApp.swift'
+      - 'ios/**'
       - '.github/workflows/ios-build.yml'
   workflow_dispatch:
 
