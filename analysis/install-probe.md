@@ -12,18 +12,18 @@
 
 | Campo de evidência | Valor Efetivo Verificado |
 |---|---|
-| Build ID / Run ID | `39474630843` (commit `1f418ba472c9eba730a518f0db5d11871bec9d52`) |
+| Build ID / Run ID | `39482747005` (commit `b0eabeecdb23c9110a510ad3d46381a1489b5a7c`) |
 | Versão de Xcode | `Xcode 26.6 (Build version 17F113)` |
 | Versão do macOS Runner | `macOS 26.x (arm64 Apple Silicon runner)` |
-| Artefato | `FireRedPort-unsigned.ipa` (165.898 bytes) |
-| SHA-256 do Artefato | `38e6d568369f1fd770af63798b8679228f647c459665e7aad3ffa3aa558a5499` |
+| Artefato | `FireRedPort-unsigned.ipa` (221.109 bytes) |
+| SHA-256 do Artefato | `7c51192c5544d86e0ec3d593cb81e21a1b37d5cfb7c4b05de8f9426726e73352` |
 | Conteúdo do IPA | `Payload/FireRedPort.app/{FireRedPort, Info.plist, PkgInfo}` (0 ROMs, 0 chaves) |
 | Bundle ID | `org.fireredport.installprobe` |
-| Testes Automatizados | 32/32 aprovados no simulador CI |
+| Testes Automatizados | 37/37 aprovados no simulador CI (0 falhas, 0 skips) |
 | Dispositivo/versão iOS alvo | iPhone 15 Pro Max / iOS 26.6.2 |
-| Assinatura | Realizada localmente via Sideloadly no Windows (Apple ID pessoal) |
-| Instalação / Abertura | **Aprovada**: instalou e abriu sem falhas no iPhone 15 Pro Max |
-| Importação / Revalidação | **Aprovada**: importação via Files e revalidação no reinício 100% verificadas |
+| Assinatura | Pronta para assinatura local via Sideloadly no Windows (Apple ID pessoal) |
+| Instalação / Abertura | Aprovada na versão anterior; este novo build inclui motor de mapa e movimentação jogável |
+| Importação / Revalidação | Aprovada; o app abre e permite iniciar a partida no overworld de Pallet Town |
 | Save / Renovação | Código implementado; aguarda ciclo de 7 dias e persistência de gameplay |
 
 Referências de procedimento: [Sideloadly FAQ](https://sideloadly.io/faq.html), [Apple Personal Team](https://developer.apple.com/help/account/basics/about-your-developer-account/), [Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device). Dependências e resultados reais deverão atualizar esta tabela antes de aprovação.
