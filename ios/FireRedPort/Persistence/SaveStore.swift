@@ -4,7 +4,7 @@ import Foundation
 /// One actor serializes operations performed through this instance. Use one shared instance
 /// per app; concurrent processes writing the same directory are not supported.
 actor SaveStore {
-    enum StoreError: Error {
+    enum StoreError: Error, Equatable {
         case invalidIdentity
         case notFound
         case incompatibleReference
