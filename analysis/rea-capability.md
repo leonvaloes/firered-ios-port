@@ -1,0 +1,11 @@
+# Capacidade REA para a ROM GBA — T008
+
+## Tentativa anterior (fonte documental)
+
+`specs/001-port-nativo-firered/viabilidade-inicial.md` e `research.md` registram tentativa efetiva de `rea.open_binary` com `format=raw-binary`, `architecture=arm`, `entry_point=0x08000000`, `provider_id=ghidra` para a ROM local. Rejeitada **antes da análise** com `capability_unavailable`; a descrição do bloqueio foi “Windows Ghidra P0 accepts native PE and explicitly selected raw 6502 targets only.” Há diferença textual entre os registros do subtipo (`target_format_unsupported` em viabilidade-inicial; `unsupported_provider` em research); não escolher um como se fosse resposta bruta aqui preservada. Resultado comum verificável nos registros: ROM raw ARM não aceita por essa integração REA/Ghidra no Windows. Nenhuma sessão da ROM ou Evidence ID de decompilação foi produzida.
+
+## Estado consultado nesta etapa (2026-10-20)
+
+Consulta **sem abrir alvo** a `rea.binary_session({})`: `open=false`, sem provider vinculado; servidor REA 6.7.0. Candidato Ghidra configurado/disponível como instalação (12.1.4 em `C:\Tools\Ghidra\Ghidra_12.1.4_build\ghidra_12.1.4_PUBLIC`, Java 25.0.1 no Windows), mas `target_support=unknown` sem alvo aberto. Hopper `unsupported_host` (Windows); IDA MCP e Kuna `not_configured`. Esses estados de instalação não demonstram suporte da ROM por outro provedor, nem revertem a rejeição anterior. Não foi repetida a mesma chamada rejeitada.
+
+**Próximo passo condicionado:** conferir novamente `binary_session` e requisitos de cada provedor antes de qualquer nova tentativa; só tentar outro provedor após confirmar configuração e suporte ao formato/arquitetura sem mascarar a ROM como PE. Alternativamente importar **independentemente** no Ghidra ARM little-endian, conferir cabeçalho e mapeamento/base GBA `0x08000000` antes de interpretar endereços, documentando linguagem/Thumb, offsets, cobertura e limitações em registro próprio. A base é hipótese inicial, não função confirmada. Resultados do Ghidra externo devem ter fonte `Ghidra independente`, jamais Evidence REA. Não declarar decompilação, execução nem paridade não observadas; a aplicação nativa não deverá executar instruções ARM da ROM.

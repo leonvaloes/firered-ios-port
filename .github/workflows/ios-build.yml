@@ -1,0 +1,135 @@
+name: iOS installation probe (unsigned)
+
+on:
+  push:
+    paths:
+      - 'ios/FireRedPort.xcodeproj/project.pbxproj'
+      - 'ios/FireRedPort/App/FireRedPortApp.swift'
+      - '.github/workflows/ios-build.yml'
+  pull_request:
+    paths:
+      - 'ios/FireRedPort.xcodeproj/project.pbxproj'
+      - 'ios/FireRedPort/App/FireRedPortApp.swift'
+      - '.github/workflows/ios-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: macos-latest
+    timeout-minutes: 40
+    env:
+      CI: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check source inventory (fail closed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This probe accepts exactly its own three source files. No ROM, resource,
+          # signing material, or unexpected source is allowed into this public job.
+          python3 - <<'PY'
+          import pathlib, subprocess, sys
+          allowed = {
+              '.github/workflows/ios-build.yml',
+              'ios/FireRedPort.xcodeproj/project.pbxproj',
+              'ios/FireRedPort.xcodeproj/xcshareddata/xcschemes/FireRedPort.xcscheme',
+              'ios/FireRedPort/App/FireRedPortApp.swift',
+              'ios/FireRedPort/App/ROMImportView.swift',
+              'ios/FireRedPort/App/SaveMenuView.swift',
+              'ios/FireRedPort/Domain/BattleEngine.swift',
+              'ios/FireRedPort/Domain/GameState.swift',
+              'ios/FireRedPort/Domain/OverworldEngine.swift',
+              'ios/FireRedPort/Domain/ROMDataReader.swift',
+              'ios/FireRedPort/Domain/ReferenceProfile.swift',
+              'ios/FireRedPort/Persistence/SaveSnapshot.swift',
+              'ios/FireRedPort/Persistence/SaveStore.swift',
+              'ios/FireRedPort/Rendering/GameAudio.swift',
+              'ios/FireRedPort/Rendering/GameScene.swift',
+              'ios/FireRedPortTests/GameplayParityTests.swift',
+              'ios/FireRedPortTests/ROMImportTests.swift',
+              'ios/FireRedPortTests/SaveStoreTests.swift',
+          }
+          tracked = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+          forbidden = {'.gba', '.ips', '.bps', '.ups', '.sav', '.p12', '.p8', '.mobileprovision', '.cer', '.key', '.pem', '.env'}
+          for name in tracked:
+              if not name:
+                  continue
+              p = pathlib.PurePosixPath(name)
+              if p.suffix.lower() in forbidden or p.name.lower().startswith('.env'):
+                  sys.exit(f'Forbidden checkout path: {name}')
+              if (name.startswith('ios/FireRedPort/') or name.startswith('ios/FireRedPortTests/') or name.startswith('ios/FireRedPort.xcodeproj/')) and name not in allowed:
+                  sys.exit(f'Unexpected app source/resource: {name}')
+          for name in allowed:
+              if not pathlib.Path(name).is_file():
+                  sys.exit(f'Missing probe source: {name}')
+          PY
+      - name: Record effective Xcode version
+        run: xcodebuild -version
+      - name: Build and smoke-test in iOS Simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild -project ios/FireRedPort.xcodeproj -scheme FireRedPort -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/simulator-build" CODE_SIGNING_ALLOWED=NO build
+          DEVICE_ID=$(python3 - <<'PY'
+          import json, subprocess, sys
+          devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', 'available', '-j']))['devices']
+          for group in devices.values():
+              for device in group:
+                  if device['name'].startswith('iPhone') and device['state'] == 'Shutdown':
+                      print(device['udid'])
+                      sys.exit(0)
+          sys.exit('No available shutdown iPhone simulator')
+          PY
+          )
+          xcrun simctl boot "$DEVICE_ID"
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/simulator-build/Build/Products/Debug-iphonesimulator/FireRedPort.app"
+          xcrun simctl launch "$DEVICE_ID" org.fireredport.installprobe
+          echo "Running synthetic XCTest suite in simulator..."
+          xcodebuild test -project ios/FireRedPort.xcodeproj -scheme FireRedPort -destination "id=$DEVICE_ID" -derivedDataPath "$RUNNER_TEMP/test-build" CODE_SIGNING_ALLOWED=NO
+          xcrun simctl shutdown "$DEVICE_ID"
+      - name: Build unsigned iPhone app
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild -project ios/FireRedPort.xcodeproj -scheme FireRedPort -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath "$RUNNER_TEMP/device-build" CODE_SIGNING_ALLOWED=NO build
+      - name: Validate app contents and package unsigned IPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          export APP="$RUNNER_TEMP/device-build/Build/Products/Release-iphoneos/FireRedPort.app"
+          export STAGING="$RUNNER_TEMP/ipa-staging"
+          python3 - <<'PY'
+          import os, pathlib, plistlib, sys
+          app = pathlib.Path(os.environ['APP'])
+          if not app.is_dir():
+              sys.exit('No device app produced')
+          expected = {'Info.plist', 'FireRedPort', 'PkgInfo'}
+          actual = {str(path.relative_to(app)) for path in app.rglob('*') if path.is_file()}
+          if not {'Info.plist', 'FireRedPort'} <= actual or actual - expected:
+              sys.exit(f'Unexpected bundle entries (refuse upload): {sorted(actual - expected)}')
+          info = plistlib.loads((app / 'Info.plist').read_bytes())
+          if info.get('CFBundleIdentifier') != 'org.fireredport.installprobe':
+              sys.exit('Unexpected bundle ID')
+          if (app / '_CodeSignature').exists() or (app / 'embedded.mobileprovision').exists():
+              sys.exit('Signing material in app')
+          for path in app.rglob('*'):
+              if path.is_symlink():
+                  sys.exit('Unexpected symlink in app')
+          PY
+          mkdir -p "$STAGING/Payload"
+          cp -R "$APP" "$STAGING/Payload/FireRedPort.app"
+          (cd "$STAGING" && zip -q -r "$RUNNER_TEMP/FireRedPort-unsigned.ipa" Payload)
+          shasum -a 256 "$RUNNER_TEMP/FireRedPort-unsigned.ipa"
+      - name: Upload unsigned, non-installable-by-itself IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: FireRedPort-unsigned-installation-probe
+          path: ${{ runner.temp }}/FireRedPort-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
