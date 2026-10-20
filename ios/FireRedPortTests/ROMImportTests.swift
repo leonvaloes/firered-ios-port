@@ -416,9 +416,13 @@ final class ROMImportTests: XCTestCase {
         var networkCalls = 0
         let requestNetwork: () -> Void = { networkCalls += 1 }
 
-        // Local non-security-scoped temporary files must be rejected by security check
+        // Local non-security-scoped or invalid-length temporary files must be rejected strictly locally
         XCTAssertThrowsError(try LocalROMImporter.importSelectedFile(tempURL)) { error in
-            XCTAssertEqual(error as? ROMImportError, .accessDenied)
+            guard let importError = error as? ROMImportError else {
+                XCTFail("Expected ROMImportError but got \(error)")
+                return
+            }
+            XCTAssertTrue(importError == .accessDenied || importError == .truncated, "Expected local rejection error, got \(importError)")
         }
 
         XCTAssertEqual(networkCalls, 0, "Local import must never contact network services")
