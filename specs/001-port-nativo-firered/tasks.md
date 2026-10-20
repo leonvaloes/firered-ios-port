@@ -148,15 +148,15 @@ US1 + US2 + US3 → Polish (T039–T041)
 
 - [ ] T042 Completar o inventário dirigido de rotinas, estruturas, método, cobertura e lacunas para os 11 subsistemas em `analysis/subsystems.md`, preservando distinção entre evidência estática e execução, per FR-001 (partial).
 - [X] T043 Verificar condições jurídicas separadas para uso pessoal e eventual distribuição; documentar fonte, responsável e bloqueios sem presumir autorização em `analysis/viability-report.md` e `analysis/release-gates.md`, per FR-003 (partial).
-- [ ] T044 Validar o projeto mínimo e o workflow em runner macOS real, registrar Xcode/artefato/erros e ensaiar assinatura e abertura no iPhone pelo Windows do usuário ou manter gate bloqueado, per FR-004 (partial).
+- [X] T044 Validar o projeto mínimo e o workflow em runner macOS real, registrar Xcode/artefato/erros e ensaiar assinatura e abertura no iPhone pelo Windows do usuário ou manter gate bloqueado, per FR-004 (partial).
 - [X] T045 Adicionar target XCTest ao `ios/FireRedPort.xcodeproj/project.pbxproj`, ligar adaptadores das três suítes sintéticas às APIs de produção, remover `XCTSkip` dos casos implementáveis e registrar execução real; não contar skips como aprovação, per plan: Testing (partial).
-- [ ] T046 Integrar `ROMImportView` e leitor no target/app, confirmar perfis e limites por evidência antes de liberar extração; testar importação local de identidade correta/incorreta e operação offline sem envio a servidores, per FR-012 (partial).
+- [X] T046 Integrar `ROMImportView` e leitor no target/app, confirmar perfis e limites por evidência antes de liberar extração; testar importação local de identidade correta/incorreta e operação offline sem envio a servidores, per FR-012 (partial).
 - [X] T047 Implementar `ios/FireRedPort/Domain/GameState.swift` como estado autoritativo do jogador, mundo, equipe, inventário, eventos e RNG derivado de evidências, sem comunicação, per FR-005 (missing).
 - [X] T048 Implementar `ios/FireRedPort/Domain/OverworldEngine.swift` com criação, mapas, interação, diálogos, eventos e progressão da campanha rastreados a casos de referência, per FR-005 (missing).
 - [X] T049 Implementar `ios/FireRedPort/Domain/BattleEngine.swift` com resultados determinísticos e regras de campanha verificáveis, sem reivindicar mecânicas não observadas, per FR-005 (missing).
 - [X] T050 Implementar `ios/FireRedPort/Rendering/GameScene.swift` com SpriteKit e controles acessíveis por toque, sem fazer dos nós a autoridade das regras, per FR-007 (missing).
 - [X] T051 Implementar `ios/FireRedPort/Rendering/GameAudio.swift` para áudio local após importação autorizada e tratamento de silêncio/interrupções, sem recurso original no bundle, per FR-007 (missing).
-- [ ] T052 Vincular `SaveSnapshot` e `SaveStore` ao estado real, verificar round-trip, erro de gravação, corrupção, schema e recuperação sem perda silenciosa com testes executados, per FR-008 (partial).
+- [X] T052 Vincular `SaveSnapshot` e `SaveStore` ao estado real, verificar round-trip, erro de gravação, corrupção, schema e recuperação sem perda silenciosa com testes executados, per FR-008 (partial).
 - [X] T053 Criar `ios/FireRedPort/App/SaveMenuView.swift` com Salvar/Continuar, erro visível e recuperação explícita, confirmando sucesso somente após gravação validada, per FR-008 (missing).
 - [ ] T054 Observar resultados da referência em cenários reproduzíveis, definir casos essenciais após inventário e registrar comparações/divergências reais no iPhone em `analysis/parity-matrix.md`, per FR-009 (partial).
 - [ ] T055 Integrar app jogável e executar campanha individual inglesa até créditos no iPhone, documentando build, aparelho, resultados e falhas em `analysis/campaign-run.md` sem aprovar antecipadamente, per SC-003 (missing).

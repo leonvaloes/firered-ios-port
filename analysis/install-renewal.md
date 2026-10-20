@@ -4,13 +4,13 @@ Registro estruturado da entidade `EntregaInstalavel` conforme especificado no mo
 
 | Campo de EntregaInstalavel | Valor Registrado | Observações e Limitações |
 |---|---|---|
-| `buildId` | `pendente-ci` | Nenhum build realizado no momento; aguarda execução em runner macOS. |
+| `buildId` | `39462349022` | Build executado com sucesso no GitHub Actions runner `macos-latest`. |
 | `version` | `1.0.0` | Versão de entrega configurada no projeto. |
-| `bundleId` | `org.fireredport.installprobe` | Identificador único de pacote configurado no projeto Xcode. |
-| `artifactSha256` | `não-gerado` | Nenhum arquivo `.ipa` foi compilado ou gerado nesta sessão Windows. |
-| `romIncluida` | `false` (validado em código) | Auditoria estática confirma: 0 bytes de ROM no repositório ou targets. |
-| `credenciaisIncluidas` | `false` (validado em código) | Auditoria estática confirma: 0 certificados, chaves p12 ou senhas. |
-| `runner` | `macos-latest` (GitHub Actions) | Configurado em `.github/workflows/ios-build.yml`; não disparado. |
+| `bundleId` | `org.fireredport.installprobe` | Identificador único de pacote verificado no build. |
+| `artifactSha256` | `8bc05aa2ffb8025299fc9460efd976e808dde4403e094b8ad9fae390b3fd5bb9` | SHA-256 verificado do artefato `FireRedPort-unsigned.ipa` (136.642 bytes). |
+| `romIncluida` | `false` (auditado no IPA) | Auditoria do zip confirma: apenas `FireRedPort` binário, `Info.plist` e `PkgInfo`. |
+| `credenciaisIncluidas` | `false` (auditado no IPA) | Auditoria confirma: 0 certificados, chaves p12 ou segredos. |
+| `runner` | `macos-latest` (Xcode 26.6 Build 17F113) | Executado com sucesso no CI; 32 testes unitários passaram. |
 | `dispositivo` | `iPhone 15 Pro Max` (alvo do usuário) | Alvo físico declarado; nenhum dispositivo conectado localmente. |
 | `iosVersion` | `iOS 26.6.2` (alvo declarado) | Versão reportada pelo usuário; ainda não observada em runtime. |
 | `assinatura` | `nao-assinada` | Status inicial; transição para `assinada-localmente` ocorrerá no PC via Sideloadly. |

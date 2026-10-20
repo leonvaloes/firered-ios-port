@@ -14,6 +14,7 @@
 *.p8
 
 # Resultados locais de análise e compilação
+artifacts/
 analysis-local/
 build/
 dist/
