@@ -12,6 +12,29 @@ struct ROMDataReader {
         self.profile = profile
     }
 
+    /// Revalidate the private copy before exposing it to the app session. A
+    /// supplied profile alone is never proof that the file still matches it.
+    func verifyIdentity() throws {
+        guard profile.sha256 == ReferenceProfile.reference.sha256,
+              profile.byteCount == ReferenceProfile.reference.byteCount else {
+            throw ROMImportError.incompatible
+        }
+        let handle = try FileHandle(forReadingFrom: url)
+        defer { try? handle.close() }
+        var digest = SHA256()
+        var header = Data()
+        var count = 0
+        while let chunk = try handle.read(upToCount: Self.chunkSize), !chunk.isEmpty {
+            count += chunk.count
+            guard count <= profile.byteCount else { throw ROMImportError.incompatible }
+            if header.count < 0xBE { header.append(chunk.prefix(0xBE - header.count)) }
+            digest.update(data: chunk)
+        }
+        guard count == profile.byteCount else { throw ROMImportError.truncated }
+        let hash = digest.finalize().map { String(format: "%02x", $0) }.joined()
+        _ = try ReferenceProfile.identify(sha256: hash, byteCount: count, header: header)
+    }
+
     func read(offset: Int, count: Int) throws -> Data {
         guard offset >= 0, count >= 0, count <= Self.chunkSize,
               offset <= profile.byteCount, count <= profile.byteCount - offset else {
@@ -44,6 +67,17 @@ struct ROMDataReader {
 
 /// Performs identity verification before any persistent copy. No networking or ROM assets in the app bundle.
 enum LocalROMImporter {
+    /// A restarted app must not treat the presence of reference.gba as proof
+    /// of identity. No extraction is enabled by restoring the reader.
+    static func restoreVerifiedCopy() throws -> ROMDataReader? {
+        let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let destination = directory.appendingPathComponent("reference.gba", isDirectory: false)
+        guard FileManager.default.fileExists(atPath: destination.path) else { return nil }
+        let reader = ROMDataReader(privateURL: destination, profile: .reference)
+        try reader.verifyIdentity()
+        return reader
+    }
+
     static func importSelectedFile(_ source: URL) throws -> ROMDataReader {
         guard source.startAccessingSecurityScopedResource() else { throw ROMImportError.accessDenied }
         defer { source.stopAccessingSecurityScopedResource() }

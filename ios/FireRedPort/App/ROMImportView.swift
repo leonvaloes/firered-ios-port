@@ -1,8 +1,10 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Standalone import screen; not wired into FireRedPortApp until integration work is done.
+/// Import screen reports an identified private copy; gameplay remains blocked.
 struct ROMImportView: View {
+    let onVerified: (ROMDataReader) -> Void
+    let onInvalidated: () -> Void
     @State private var showingPicker = false
     @State private var importing = false
     @State private var status = "Nenhuma ROM importada. Jogo não implementado."
@@ -27,6 +29,7 @@ struct ROMImportView: View {
                 Task { await DiagnosticLog.shared.record(.importAccessFailed) }
             case .success(let urls):
                 guard let url = urls.first else { return }
+                onInvalidated()
                 importing = true
                 status = "Verificando identidade..."
                 Task.detached(priority: .userInitiated) {
@@ -34,7 +37,11 @@ struct ROMImportView: View {
                     let message: String
                     let event: DiagnosticLog.Event
                     do {
-                        _ = try LocalROMImporter.importSelectedFile(url)
+                        let reader = try LocalROMImporter.importSelectedFile(url)
+                        // Keep the reader in the app session only after the private
+                        // copy has been independently checked as well.
+                        try reader.verifyIdentity()
+                        await MainActor.run { onVerified(reader) }
                         message = "Cópia local verificada. Jogo e extração ainda não implementados."
                         event = .importVerified
                     } catch ROMImportError.truncated {

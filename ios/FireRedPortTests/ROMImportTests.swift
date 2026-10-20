@@ -318,6 +318,32 @@ final class ROMImportTests: XCTestCase {
         }
     }
 
+    func testPrivateCopyMustBeRevalidatedBeforeSessionUse() throws {
+        let url = try createSyntheticTempFile(size: expectedSize)
+        defer { try? FileManager.default.removeItem(at: url) }
+        let reader = ROMDataReader(privateURL: url, profile: .reference)
+        XCTAssertThrowsError(try reader.verifyIdentity()) { error in
+            XCTAssertEqual(error as? ROMImportError, .incompatible)
+        }
+
+        let handle = try FileHandle(forWritingTo: url)
+        try handle.truncate(atOffset: 32)
+        try handle.close()
+        XCTAssertThrowsError(try reader.verifyIdentity()) { error in
+            XCTAssertEqual(error as? ROMImportError, .truncated)
+        }
+    }
+
+    func testUntrustedProfileCannotAuthorizePrivateCopy() throws {
+        let url = try createSyntheticTempFile(size: 64)
+        defer { try? FileManager.default.removeItem(at: url) }
+        let profile = ReferenceProfile(sha256: String(repeating: "0", count: 64),
+                                       byteCount: 64, region: "TEST", version: 0)
+        XCTAssertThrowsError(try ROMDataReader(privateURL: url, profile: profile).verifyIdentity()) { error in
+            XCTAssertEqual(error as? ROMImportError, .incompatible)
+        }
+    }
+
     // MARK: - Bounded Reader Tests
 
     func testReadRejectsOverflowNegativeAndEndCrossing() throws {
