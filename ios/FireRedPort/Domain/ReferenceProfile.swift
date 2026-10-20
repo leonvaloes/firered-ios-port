@@ -1,7 +1,7 @@
 import Foundation
 
-/// Identity only. No game structure/table offsets have been validated in
-/// analysis/subsystems.md, so a matching ROM cannot enable extraction yet.
+/// Identity profile. One narrow text-pointer layout is statically observed,
+/// but gameplay structures remain unverified, so generic extraction stays disabled.
 struct ReferenceProfile {
     static let reference = ReferenceProfile(
         sha256: "3d0c79f1627022e18765766f6cb5ea067f6b5bf7dca115552189ad65a5c3a8ac",
@@ -15,7 +15,7 @@ struct ReferenceProfile {
     let region: String
     let version: UInt8
 
-    /// No confirmed table limits or layouts exist. Do not substitute guessed values.
+    /// No validated gameplay-table layouts exist. Do not substitute guessed values.
     var validatedTableLimits: [String: Int] { [:] }
     var extractionEnabled: Bool { false }
 

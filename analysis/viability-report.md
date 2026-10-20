@@ -24,15 +24,15 @@
 
 ## Direitos e gates (T043)
 
-- **Condições para uso pessoal e engenharia reversa:**
-  - *Fonte legal e doutrina:* Exceções de cópia de segurança e engenharia reversa para interoperabilidade e estudo técnico (ex.: Art. 6º da Lei Federal nº 9.609/1998 e Lei nº 9.610/1998 no Brasil; 17 U.S.C. § 117 e § 1201(f) nos EUA). A análise estática de formatos e estruturas sem elisão de travas criptográficas de hardware (inexistentes no cartucho de Game Boy Advance) enquadra-se como pesquisa de interoperabilidade.
-  - *Responsável:* O usuário individual é o operador exclusivo do procedimento, responsável por possuir licitamente o cartucho original e realizar o despejo de sua própria cópia de segurança pessoal.
-  - *Limites:* A posse de um arquivo binário local não transfere propriedade intelectual, não legitima downloads de sites de terceiros e não autoriza uso fora do escopo privado estrito.
+- **Uso pessoal e engenharia reversa — pendente de avaliação, não autorizado por este relatório:**
+  - *Fontes a verificar:* legislação e exceções aplicáveis na jurisdição efetiva do usuário (por exemplo, Lei 9.609/1998 e Lei 9.610/1998 no Brasil ou 17 U.S.C. § 117 e § 1201(f) nos EUA). A citação dessas normas **não** determina por si só que a cópia, análise, importação ou uso concreto sejam permitidos; verificar também origem e eventuais restrições contratuais/técnicas com orientação jurídica competente.
+  - *Responsável:* o usuário deve fornecer comprovação de procedência da cópia e obter avaliação específica antes de afirmar autorização. Não foi comprovada posse de cartucho original, procedimento de dump ou jurisdição aplicável.
+  - *Limites:* o hash e a presença da ROM local comprovam somente identidade dos bytes, não legitimidade de obtenção, direitos sobre marcas ou autorização de distribuição. Gate de uso pessoal: **pendente**.
 - **Condições para distribuição e licenciamento comercial:**
   - *Fonte e titulares:* Marcas registradas "Pokémon", "FireRed", designs de criaturas, diálogos, áudios e sprites são propriedade exclusiva de Nintendo Co., Ltd., The Pokémon Company e Game Freak Inc.
   - *Responsável:* Qualquer entidade ou desenvolvedor que disponibilize o aplicativo ao público.
   - *Bloqueio intransponível:* **Distribuição do jogo, ROM, recursos multimídia extraídos ou binários compilados contendo propriedade intelectual é bloqueada de forma absoluta**, salvo se obtida licença formal escrita dos detentores dos direitos. A autoria limpa do código-fonte (clean-room) não convalida a distribuição de ativos gráficos, musicais ou narrativos protegidos.
-- **Build/instalação:** protótipo sem ROM pode ser desenvolvido, mas IPA/CI e Sideloadly não foram executados. Alternativa condicionada: runner macOS confiável compila **sem segredos**; assinatura ocorre apenas no PC do usuário; se IPA não instalar, investigar configuração/provisionamento legítimos e manter entrega bloqueada.
+- **Build/instalação:** o GitHub Actions produziu e testou um IPA não assinado (run `39462349022`; `analysis/install-probe.md`); isso não demonstra assinatura Sideloadly nem instalação/abertura no iPhone. Assinatura e ensaio físico permanecem pendentes, sem segredos no CI.
 - **Cobertura/entrega:** nenhum subsistema consta `testado`; T012 inventário ainda incompleto. Port não pode ser anunciado como funcional, muito menos “100% funcional”, antes de campanha individual em inglês até créditos, todos os casos essenciais aprovados no aparelho, save 20/20 e renovação sem perda.
 
 ## Aplicação do checklist (T018 — parcial)

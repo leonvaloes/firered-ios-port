@@ -16,6 +16,7 @@
 # Resultados locais de análise e compilação
 artifacts/
 analysis-local/
+PROMPT-PARA-EXECUTAR.md
 build/
 dist/
 .build/

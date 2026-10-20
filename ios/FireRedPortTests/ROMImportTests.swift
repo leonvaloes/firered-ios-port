@@ -255,8 +255,9 @@ final class ROMImportTests: XCTestCase {
     ///
     /// Precise limitation documentation:
     /// In production, `ReferenceProfile.validatedTableLimits` returns `{ [:] }` and
-    /// `extractionEnabled` returns `false` by design, because no game structures have been
-    /// validated in `analysis/subsystems.md`. Consequently, `ROMDataReader.readTable`
+    /// `extractionEnabled` returns `false` by design, because no gameplay structures have been
+    /// validated in `analysis/subsystems.md`. A narrowly bounded text-pointer probe does not
+    /// enable gameplay extraction. Consequently, `ROMDataReader.readTable`
     /// unconditionally rejects table reads with `.extractionNotValidated` before validating
     /// entry count, stride, or multiplication overflow.
     ///
@@ -314,6 +315,40 @@ final class ROMImportTests: XCTestCase {
 
         let reader = ROMDataReader(privateURL: tempURL, profile: reference)
         XCTAssertThrowsError(try reader.readTable(named: "pokemon_data", offset: 0, entries: 1, stride: 1)) { error in
+            XCTAssertEqual(error as? ROMImportError, .extractionNotValidated)
+        }
+    }
+
+    func testVerifiedTextPointerUsesOnlyBoundedStructuralData() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".bin")
+        defer { try? FileManager.default.removeItem(at: url) }
+        XCTAssertTrue(FileManager.default.createFile(atPath: url.path, contents: nil))
+        let handle = try FileHandle(forWritingTo: url)
+        defer { try? handle.close() }
+        try handle.truncate(atOffset: UInt64(expectedSize))
+        try handle.seek(toOffset: 0x3f1cac)
+        try handle.write(contentsOf: Data([0xfc, 0xec, 0x3e, 0x08]))
+        try handle.seek(toOffset: 0x3eecfc)
+        try handle.write(contentsOf: Data([0x01, 0xff]))
+        try handle.synchronize()
+
+        let reader = ROMDataReader(privateURL: url, profile: .reference)
+        // A synthetic file cannot prove the whole-file identity even if its
+        // pointer and terminator occupy the expected offsets.
+        XCTAssertThrowsError(try reader.verifiedTextPointer(at: 0)) { error in
+            XCTAssertEqual(error as? ROMImportError, .incompatible)
+        }
+        for index in [-1, 109, Int.max] {
+            XCTAssertThrowsError(try reader.verifiedTextPointer(at: index)) { error in
+                XCTAssertEqual(error as? ROMImportError, .invalidCount)
+            }
+        }
+        XCTAssertThrowsError(try reader.verifiedTextPointer(at: 1)) { error in
+            XCTAssertEqual(error as? ROMImportError, .incompatible)
+        }
+        let incompatible = ReferenceProfile(sha256: String(repeating: "0", count: 64),
+                                            byteCount: expectedSize, region: "TEST", version: 0)
+        XCTAssertThrowsError(try ROMDataReader(privateURL: url, profile: incompatible).verifiedTextPointer(at: 0)) { error in
             XCTAssertEqual(error as? ROMImportError, .extractionNotValidated)
         }
     }
@@ -453,6 +488,39 @@ final class ROMImportTests: XCTestCase {
 
         XCTAssertEqual(networkCalls, 0, "Local import must never contact network services")
         _ = requestNetwork
+    }
+
+    func testLoadMapLayoutRejectsUnvalidatedOrOutOfBoundsCalls() throws {
+        let tempURL = try createSyntheticTempFile(size: 64)
+        defer { try? FileManager.default.removeItem(at: tempURL) }
+
+        let syntheticProfile = ReferenceProfile(
+            sha256: String(repeating: "0", count: 64),
+            byteCount: 64,
+            region: "TEST",
+            version: 0
+        )
+        let reader = ROMDataReader(privateURL: tempURL, profile: syntheticProfile)
+
+        // Extraction not validated on synthetic/unmatched profile
+        XCTAssertThrowsError(try reader.loadMapLayout(bank: 3, map: 0)) { error in
+            XCTAssertEqual(error as? ROMImportError, .extractionNotValidated)
+        }
+
+        // Reference profile with invalid bank or map index
+        let refReader = ROMDataReader(privateURL: tempURL, profile: .reference)
+        XCTAssertThrowsError(try refReader.loadMapLayout(bank: -1, map: 0)) { error in
+            XCTAssertEqual(error as? ROMImportError, .invalidCount)
+        }
+        XCTAssertThrowsError(try refReader.loadMapLayout(bank: 100, map: 0)) { error in
+            XCTAssertEqual(error as? ROMImportError, .invalidCount)
+        }
+        XCTAssertThrowsError(try refReader.loadMapLayout(bank: 3, map: -1)) { error in
+            XCTAssertEqual(error as? ROMImportError, .invalidCount)
+        }
+        XCTAssertThrowsError(try refReader.loadMapLayout(bank: 3, map: 200)) { error in
+            XCTAssertEqual(error as? ROMImportError, .invalidCount)
+        }
     }
 
     // MARK: - Synthetic Fixture Cleanliness Tests
