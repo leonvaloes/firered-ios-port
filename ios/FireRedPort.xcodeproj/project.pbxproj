@@ -22,6 +22,9 @@
 		A10000000000000000000051 /* ROMImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000050 /* ROMImportTests.swift */; };
 		A10000000000000000000053 /* SaveStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000052 /* SaveStoreTests.swift */; };
 		A10000000000000000000055 /* GameplayParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000054 /* GameplayParityTests.swift */; };
+		A10000000000000000000061 /* DiagnosticLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000062 /* DiagnosticLog.swift */; };
+		A10000000000000000000063 /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000064 /* DiagnosticsView.swift */; };
+		A10000000000000000000065 /* DiagnosticLogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000066 /* DiagnosticLogTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +45,9 @@
 		A10000000000000000000052 /* SaveStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveStoreTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000054 /* GameplayParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameplayParityTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000056 /* FireRedPortTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FireRedPortTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000062 /* DiagnosticLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticLog.swift; sourceTree = "<group>"; };
+		A10000000000000000000064 /* DiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsView.swift; sourceTree = "<group>"; };
+		A10000000000000000000066 /* DiagnosticLogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticLogTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -72,6 +78,7 @@
 				A10000000000000000000002 /* FireRedPortApp.swift */,
 				A10000000000000000000030 /* ROMImportView.swift */,
 				A10000000000000000000032 /* SaveMenuView.swift */,
+				A10000000000000000000064 /* DiagnosticsView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -84,6 +91,7 @@
 				A10000000000000000000038 /* OverworldEngine.swift */,
 				A1000000000000000000003A /* ReferenceProfile.swift */,
 				A1000000000000000000003C /* ROMDataReader.swift */,
+				A10000000000000000000062 /* DiagnosticLog.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -112,6 +120,7 @@
 				A10000000000000000000050 /* ROMImportTests.swift */,
 				A10000000000000000000052 /* SaveStoreTests.swift */,
 				A10000000000000000000054 /* GameplayParityTests.swift */,
+				A10000000000000000000066 /* DiagnosticLogTests.swift */,
 			);
 			path = FireRedPortTests;
 			sourceTree = "<group>";
@@ -226,6 +235,8 @@
 				A10000000000000000000041 /* SaveStore.swift in Sources */,
 				A10000000000000000000043 /* GameAudio.swift in Sources */,
 				A10000000000000000000045 /* GameScene.swift in Sources */,
+				A10000000000000000000061 /* DiagnosticLog.swift in Sources */,
+				A10000000000000000000063 /* DiagnosticsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +247,7 @@
 				A10000000000000000000051 /* ROMImportTests.swift in Sources */,
 				A10000000000000000000053 /* SaveStoreTests.swift in Sources */,
 				A10000000000000000000055 /* GameplayParityTests.swift in Sources */,
+				A10000000000000000000065 /* DiagnosticLogTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

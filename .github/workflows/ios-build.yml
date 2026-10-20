@@ -28,18 +28,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # This probe accepts exactly its own three source files. No ROM, resource,
-          # signing material, or unexpected source is allowed into this public job.
+          # Only audited Swift sources may enter this public build; never ROMs or secrets.
           python3 - <<'PY'
           import pathlib, subprocess, sys
           allowed = {
               '.github/workflows/ios-build.yml',
               'ios/FireRedPort.xcodeproj/project.pbxproj',
               'ios/FireRedPort.xcodeproj/xcshareddata/xcschemes/FireRedPort.xcscheme',
+              'ios/FireRedPort/App/DiagnosticsView.swift',
               'ios/FireRedPort/App/FireRedPortApp.swift',
               'ios/FireRedPort/App/ROMImportView.swift',
               'ios/FireRedPort/App/SaveMenuView.swift',
               'ios/FireRedPort/Domain/BattleEngine.swift',
+              'ios/FireRedPort/Domain/DiagnosticLog.swift',
               'ios/FireRedPort/Domain/GameState.swift',
               'ios/FireRedPort/Domain/OverworldEngine.swift',
               'ios/FireRedPort/Domain/ROMDataReader.swift',
@@ -48,6 +49,7 @@ jobs:
               'ios/FireRedPort/Persistence/SaveStore.swift',
               'ios/FireRedPort/Rendering/GameAudio.swift',
               'ios/FireRedPort/Rendering/GameScene.swift',
+              'ios/FireRedPortTests/DiagnosticLogTests.swift',
               'ios/FireRedPortTests/GameplayParityTests.swift',
               'ios/FireRedPortTests/ROMImportTests.swift',
               'ios/FireRedPortTests/SaveStoreTests.swift',

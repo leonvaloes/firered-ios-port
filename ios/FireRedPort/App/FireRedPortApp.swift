@@ -4,6 +4,7 @@ import SwiftUI
 struct FireRedPortApp: App {
     @State private var showingImportSheet = false
     @State private var showingSaveSheet = false
+    @State private var showingDiagnosticsSheet = false
     @State private var gameState = GameState()
 
     var body: some Scene {
@@ -49,6 +50,9 @@ struct FireRedPortApp: App {
                         .buttonStyle(.bordered)
                     }
 
+                    Button("Diagnóstico") { showingDiagnosticsSheet = true }
+                        .buttonStyle(.bordered)
+
                     Spacer()
 
                     Text("Nenhum código ARM emulado. Dados de jogo protegidos não incluídos no pacote.")
@@ -65,6 +69,10 @@ struct FireRedPortApp: App {
                 .sheet(isPresented: $showingSaveSheet) {
                     SaveMenuView()
                 }
+                .sheet(isPresented: $showingDiagnosticsSheet) {
+                    DiagnosticsView()
+                }
+                .task { await DiagnosticLog.shared.record(.appOpened) }
             }
         }
     }
