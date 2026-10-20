@@ -38,6 +38,6 @@ ios/
 
 ### Execução e Ambiente
 
-- **Ambiente local:** Windows 11 x64. Como a toolchain Swift/Xcode (`xcodebuild`) não existe nativamente no Windows, **nenhuma compilação ou execução de testes foi realizada nesta máquina**.
+- **Ambiente local:** Windows 11 x64 sem Xcode. O GitHub Actions executou 32 testes sintéticos e produziu um IPA unsigned (run `39462349022`); isso não valida paridade com o jogo, campanha no iPhone ou gravação pela interface. A UI atual de save não está ligada ao `SaveStore` e permanece desabilitada.
 - **Automação CI (`.github/workflows/ios-build.yml`):** Executa em runner `macos-latest`, realiza auditoria estrita de inventário, compila o app, executa a suíte `xcodebuild test` no simulador e empacota o IPA unsigned.
 - **Validação no aparelho real:** Instalação e execução de campanha exigem assinatura via Sideloadly no Windows do usuário e teste em iPhone 15 Pro Max físico. Nenhuma aprovação em hardware foi presumida.

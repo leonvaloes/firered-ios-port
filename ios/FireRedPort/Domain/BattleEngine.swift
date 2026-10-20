@@ -27,15 +27,21 @@ public enum BattleEngine {
 
     /// Simplified deterministic base damage calculation for contract tests.
     public static func calculateDamage(attacker: Combatant, defender: Combatant, power: Int) -> Int {
-        guard defender.defense > 0 else { return power }
-        let base = ((2 * attacker.level / 5 + 2) * power * attacker.attack / defender.defense) / 50 + 2
-        return max(1, base)
+        // Reject malformed combatants rather than allowing negative damage or integer overflow.
+        // This is a safety guard for the synthetic engine, not a FireRed parity claim.
+        guard attacker.level > 0, attacker.level <= 100,
+              attacker.attack > 0, attacker.attack <= 65_535,
+              defender.defense > 0, defender.defense <= 65_535,
+              power > 0, power <= 255 else { return 0 }
+        let base = ((Int64(2 * attacker.level / 5 + 2) * Int64(power) * Int64(attacker.attack)) / Int64(defender.defense)) / 50 + 2
+        return Int(max(Int64(1), base))
     }
 
     /// Applies single attack turn deterministically.
     public static func executeAttack(attacker: Combatant, defender: inout Combatant, power: Int) -> TurnOutcome {
         let dmg = calculateDamage(attacker: attacker, defender: defender, power: power)
-        defender.currentHP = max(0, defender.currentHP - dmg)
+        guard dmg > 0 else { return .damaged(damage: 0, remainingHP: defender.currentHP) }
+        defender.currentHP = max(0, defender.currentHP - min(dmg, max(0, defender.currentHP)))
         if defender.currentHP == 0 {
             return .fainted
         }

@@ -41,6 +41,15 @@ final class GameplayParityTests: XCTestCase {
         }
     }
 
+    func testMalformedSyntheticAttackCannotHealOrOverflow() {
+        let attacker = BattleEngine.Combatant(name: "synthetic", level: Int.max, currentHP: 1, maxHP: 1, attack: Int.max, defense: 1)
+        var defender = BattleEngine.Combatant(name: "synthetic", level: 1, currentHP: 20, maxHP: 20, attack: 1, defense: 0)
+        let outcome = BattleEngine.executeAttack(attacker: attacker, defender: &defender, power: -40)
+        XCTAssertEqual(outcome, .damaged(damage: 0, remainingHP: 20))
+        XCTAssertEqual(defender.currentHP, 20)
+        XCTAssertEqual(BattleEngine.calculateDamage(attacker: attacker, defender: defender, power: Int.max), 0)
+    }
+
     func testEventFlagStateMutation() {
         var state = GameState()
         XCTAssertNil(state.flags["GOT_STARTER"])
